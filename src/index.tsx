@@ -4,6 +4,7 @@ import App from './App';
 import { ThemeProvider, createGlobalStyle } from "styled-components";
 import { theme } from './theme';
 import { RecoilRoot } from "recoil";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 
 const GlobalStyle = createGlobalStyle`
@@ -33,7 +34,11 @@ const GlobalStyle = createGlobalStyle`
     display: block;
   }
   body {
-    line-height: 1;
+    line-height: 1.2;
+    font-weight: 300;
+    color: ${(props) => props.theme.white.darker};
+    font-family: 'Source Sans Pro', sans-serif;
+    background-color: black;
   }
   ol, ul {
     list-style: none;
@@ -50,8 +55,13 @@ const GlobalStyle = createGlobalStyle`
     border-collapse: collapse;
     border-spacing: 0;
   }
+  a{
+    text-decoration: none;
+    color: ${(props) => props.theme.white.lighter};
+  }
 `;
 
+const client = new QueryClient();
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -59,10 +69,12 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <RecoilRoot>
-      <ThemeProvider theme={theme}>
-        <GlobalStyle />
-        <App />
-      </ThemeProvider>
+      <QueryClientProvider client={client}>
+        <ThemeProvider theme={theme}>
+          <GlobalStyle />
+          <App />
+        </ThemeProvider>
+      </QueryClientProvider>
     </RecoilRoot>
   </React.StrictMode>
 );
