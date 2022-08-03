@@ -41,10 +41,22 @@ export interface IMovieDetail {
   title: string;
 }
 
+export interface IMovieSearchData {
+  results: IMovie[];
+}
+
 export function getMovies(){
   return fetch(`${BASE_PATH}/movie/now_playing?api_key=${API_KEY}`).then((response) => response.json());
 }
 
-export function getMovieDetail(movieId:number){
+export function getMovieDetail(movieId:string){
   return fetch(`${BASE_PATH}/movie/${movieId}?api_key=${API_KEY}`).then((response) => response.json());
+}
+
+export function searchMovie(keyword:string|null){
+  return fetch(`${BASE_PATH}/search/movie?api_key=${API_KEY}&query=${keyword}`).then((response) => response.json());
+}
+
+export function serachTV(keyword:string|null){
+  return fetch(`${BASE_PATH}/search/tv?api_key=${API_KEY}&query=${keyword}&page=1`).then((response) => response.json());
 }

@@ -25,10 +25,6 @@ const Logo = styled(motion.svg)`
   width: 95px;
   height: 25px;
   fill: ${(props) => props.theme.red};
-  /* path {
-    stroke-width: 6px;
-    stroke: white;
-  } */
 `;
 
 const Items = styled.ul`

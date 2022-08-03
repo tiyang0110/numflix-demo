@@ -2,9 +2,11 @@ import { AnimatePresence, useScroll } from "framer-motion";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { useMatch, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getMovieDetail, IMovieDetail } from "../api";
 import { makeImagePath } from "../utils";
+import { useRecoilState } from "recoil";
+import { bigMovieOpenState } from "../atom";
 
 const Overlay = styled(motion.div)`
   position: fixed;
@@ -15,70 +17,134 @@ const Overlay = styled(motion.div)`
   opacity: 0;
 `;
 
-const BigMovie = styled(motion.div)`
+const Wrapper = styled(motion.div)`
   position: absolute; 
   width: 40vw; 
-  height: 80vh; 
+  /* height: 80vh;  */
   left: 0; 
   right: 0; 
   margin: 0 auto;
   background-color: ${(props) => props.theme.black.darker};
   border-radius: 15px;
   overflow: hidden;
+  h2 {
+    position: relative;
+    font-size: 20px;
+    padding: 20px;
+    top: -100px;
+  }
 `;
 
-const BigCover = styled.div`
+const Cover = styled.div`
   width: 100%;
   background-size: cover;
   background-position: center center;
   height: 400px;
 `;
 
-const BigTitle = styled.h3`
+const Title = styled.span`
   color: ${(props) => props.theme.white.lighter};
-  font-size: 46px;
+  font-size: 40px;
   padding: 20px;
   top: -80px;
   position: relative;
+  display: flex;
+  align-items: flex-end;
+  h3 {
+    font-size: 19px;
+    margin-left: 10px;
+    position: relative;
+    top: -7px;
+  }
 `;
 
-const BigOvervew = styled.p`
+const Overview = styled.p`
   padding: 20px;
   position: relative;
   top: -80px;
   color: ${(props) => props.theme.white.lighter};
 `;
 
-function MovieDetail(movieDetail:any){
+const Tags = styled.div`
+  position: relative;
+  top: -120px;
+  padding: 20px;
+`;
+
+const Tag = styled.span`
+  border: 1px solid ${(props) => props.theme.white.lighter};
+  padding: 5px;
+  border-radius: 5px;
+  &:not(:first-child){
+    margin-left: 10px;
+  }
+  span:first-child{
+    margin-left: 10px;
+  }
+`;
+
+// const Product = styled.div`
+
+// `;
+
+// const Company = styled.div`
+
+// `;
+
+function MovieDetail(){
   const navigate = useNavigate();
   const {scrollY} = useScroll();
   const bigMovieMatch = useMatch("/movies/:movieId");
+  const [bigMovieOpen, setBigMovieOpen] = useRecoilState(bigMovieOpenState);
+  const [movieDetail, setMovieDetail] = useState<IMovieDetail>();
+
+  async function fetchGetMovieDetail(){
+    const data = await getMovieDetail(bigMovieMatch?.params.movieId+"");
+    setMovieDetail(data);
+  };
 
   const onOverlayClick = () => {
+    setBigMovieOpen(false);
     navigate("/");
   };
 
-  // const clickedMovie = bigMovieMatch?.params.movieId && data?.results.find((movie) => String(movie.id) === bigMovieMatch.params.movieId);
+  useEffect(() => {
+    if(!bigMovieOpen) return;
+    fetchGetMovieDetail();
+  }, [bigMovieOpen]);
 
   return (
     <AnimatePresence>
-      {bigMovieMatch ? (
+      {bigMovieOpen ? (
         <>
           <Overlay onClick={onOverlayClick} animate={{opacity: 1}} exit={{opacity: 0}} />
-          <BigMovie layoutId={movieDetail.id+""} style={{top: scrollY.get() + 100}}>
+          <Wrapper layoutId={movieDetail?.id+""} style={{top: scrollY.get() + 100}}>
             {movieDetail && (
               <>
-                <BigCover style={{backgroundImage: `linear-gradient(to top, black, transparent), url(${makeImagePath(movieDetail.backdrop_path, "w500")})`}} />
-                <BigTitle>{movieDetail?.title}</BigTitle>
-                <BigOvervew>{movieDetail?.overview}</BigOvervew>
-                <h2>Detail</h2>
-                <h2>Genres</h2>
-                {movieDetail?.genres.map((genre) => (
-                  <div key={genre.id}>{genre.name}</div>
-                ))}
+                <Cover style={{backgroundImage: `linear-gradient(to top, black, transparent), url(${makeImagePath(movieDetail.backdrop_path, "w500")})`}} />
+                <Title>
+                  {movieDetail?.title}
+                  <h3>({movieDetail?.release_date.substring(0, 4)})</h3>
+                </Title>
+                <Overview>{movieDetail?.overview}</Overview>
+                <h2>- Genres -</h2>
+                <Tags>
+                  {movieDetail?.genres.map((genre) => (
+                    <Tag key={genre.id}>{genre.name}</Tag>
+                  ))}
+                </Tags>
+                {/* <Product>
+                  {movieDetail.production_companies.map((com) => (
+                    <Company key={com.id}>
+                      <span>{com.name}</span>
+                      <span>{com.logo_path}</span>
+                      <div style={{ backgroundImage: `url(${makeImagePath(com.logo_path, "w200")})`}} />
+                    </Company>
+                  ))}
+                </Product> */}
               </>
             )}
-          </BigMovie>
+          </Wrapper>
         </>
       ) : null}
     </AnimatePresence>

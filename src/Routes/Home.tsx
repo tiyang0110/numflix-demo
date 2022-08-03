@@ -1,9 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { motion, AnimatePresence, useScroll } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { useMatch, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { getMovieDetail, getMovies, IGetMoviesResult, IMovieDetail } from "../api";
+import { getMovies, IGetMoviesResult } from "../api";
+import { bigMovieOpenState } from "../atom";
 import MovieDetail from "../Components/MovieDetail";
 import { makeImagePath } from "../utils";
 
@@ -150,7 +152,7 @@ function Home(){
   const {data, isLoading} = useQuery<IGetMoviesResult>(["movies", "nowPlaying"], getMovies);
   const [back, setBack] = useState(false);
   const [index, setIndex] = useState(0);
-  const [movieDetail, setMovieDetail] = useState<IMovieDetail>();
+  const setBigMovieOpen = useSetRecoilState(bigMovieOpenState);
   const navigate = useNavigate();
   
   const onClickChangeIndex = (dir:string) => {
@@ -173,10 +175,8 @@ function Home(){
   const [leaving, setLeaving] = useState(false);
   const toggleLeaving = () => setLeaving((prev) => !prev);
 
-  const onBoxClicked = async (movieId:number) => {
-    setMovieDetail(
-      await getMovieDetail(movieId)
-    );
+  const onBoxClicked = (movieId:number) => {
+    setBigMovieOpen(true);
     navigate(`/movies/${movieId}`);
   };
   
@@ -205,7 +205,7 @@ function Home(){
               <SliderArr key="sl" direction="right" onClick={() => {onClickChangeIndex("right")}}>&rarr;</SliderArr>
             </AnimatePresence>
           </Slider>
-          <MovieDetail movieDetail={movieDetail}/>
+          <MovieDetail />
         </>
       )}
     </Wrapper>
