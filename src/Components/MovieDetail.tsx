@@ -104,7 +104,7 @@ function MovieDetail({movieId, pageType}:IMovieDetailProps){
     if(movieId){
       fetchGetMovieDetail(movieId);
     }
-  }, [bigMovieOpen]);
+  }, [bigMovieOpen, fetchGetMovieDetail, movieId]);
 
   return (
     <AnimatePresence>
