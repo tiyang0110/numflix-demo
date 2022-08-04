@@ -1,9 +1,12 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { IMovieSearchData, searchMovie } from "../api";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { makeImagePath } from "../utils";
+import MovieDetail from "../Components/MovieDetail";
+import { useSetRecoilState } from "recoil";
+import { bigMovieOpenState } from "../atom";
 
 const Wrapper = styled.div`
   display: grid;
@@ -17,63 +20,72 @@ const Wrapper = styled.div`
   position: relative;
 `;
 
-const Poster = styled(motion.div)<{posterSrc:string}>`
-  background-image: url(${(props) => props.posterSrc});
+const Poster = styled(motion.div)<{postersrc:string}>`
+  background-image: url(${(props) => props.postersrc});
   width: 200px;
   height: 300px;
   background-size: cover;
   background-position: center center;
   cursor: pointer;
-  h4 {
-
-  }
 `;
 
-const PosterTitle = styled(motion.div)`
-  padding: 10px;
-  background-color: ${(props) => props.theme.black.lighter};
-  opacity: 1;
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  box-sizing: border-box;
-  h4{
-    text-align: center;
-    font-size: 18px;
-    color: white;
+const PosterVar = {
+  normal: {
+    scale: 1,
+  },
+  hover: {
+    scale: 1.3,
+    y: -50,
+    transition: {
+      delay: 0.3,
+      duration: 0.3,
+      type: "tween",
+    }
   }
-`;
+}
 
 function Search(){
   const location = useLocation();
   const keyword = new URLSearchParams(location.search).get("keyword");
   const [searchData, setSearchData] = useState<IMovieSearchData>();
+  const [movieId, setMovieId] = useState("");
+  const setBigMovieOpen = useSetRecoilState(bigMovieOpenState);
 
-  async function fetchSearchKeyword(){
+  const fetchSearchKeyword = useCallback( async () => {
     const data = await searchMovie(keyword);
     setSearchData(data);
-  }
+  }, [keyword]);
+
+
+  const onBoxClicked = (movieId:string) => {
+    setBigMovieOpen(true);
+    setMovieId(movieId);
+  };
 
   useEffect(() => {
     fetchSearchKeyword();
-  }, [keyword]);
+  }, [fetchSearchKeyword]);
 
   return (
     <Wrapper>
-      {searchData?.results.map((movie) => (
-        <Poster key={movie.id} posterSrc={makeImagePath(movie.poster_path, "w200")}>
-          {/* <PosterTitle>{movie.title}</PosterTitle> */}
-        </Poster>
-      ))}
+      <>
+        {searchData?.results.map((movie) => (
+          <Poster
+            layoutId={movie.id+""}
+            key={movie.id}
+            postersrc={makeImagePath(movie.poster_path, "w200")}
+            variants={PosterVar}
+            initial="normar"
+            whileHover="hover"
+            transition={{type: "tween"}}
+            onClick={() => onBoxClicked(movie.id+"")}
+          >
+          </Poster>
+        ))}
+        <MovieDetail pageType="search" movieId={movieId} />
+      </>
     </Wrapper>
   );
 }
 
 export default Search;
-
-/*
-  1. 모달 팝업 개선해보기 O
-  2. 상단 메뉴 추가
-  3. 검색기능 추가
-  4. 슬라이더 화살표 버튼 등 개선 O
-*/

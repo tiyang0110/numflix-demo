@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { getMovies, IGetMoviesResult } from "../api";
@@ -152,8 +151,8 @@ function Home(){
   const {data, isLoading} = useQuery<IGetMoviesResult>(["movies", "nowPlaying"], getMovies);
   const [back, setBack] = useState(false);
   const [index, setIndex] = useState(0);
+  const [movieId, setMovieId] = useState("");
   const setBigMovieOpen = useSetRecoilState(bigMovieOpenState);
-  const navigate = useNavigate();
   
   const onClickChangeIndex = (dir:string) => {
     if(data){
@@ -175,9 +174,9 @@ function Home(){
   const [leaving, setLeaving] = useState(false);
   const toggleLeaving = () => setLeaving((prev) => !prev);
 
-  const onBoxClicked = (movieId:number) => {
+  const onBoxClicked = (movieId:string) => {
+    setMovieId(movieId);
     setBigMovieOpen(true);
-    navigate(`/movies/${movieId}`);
   };
   
   return (
@@ -195,7 +194,7 @@ function Home(){
               <SliderArr key="sa" direction="left" onClick={() => {onClickChangeIndex("left")}}>&larr;</SliderArr>
                 <Row variants={rowVar} custom={back} initial="hidden" animate="visible" exit="exit" transition={{type:"tween", duration:1}} key={index}>
                   {data?.results.slice(1).slice(offset*index, offset*index+offset).map((movie) => (
-                    <Box layoutId={movie.id+""} key={movie.id} bgphoto={makeImagePath(movie.backdrop_path, "w500")} variants={boxVar} initial="normal" whileHover="hover" transition={{type: "tween"}} onClick={() => onBoxClicked(movie.id)}>
+                    <Box layoutId={movie.id+""} key={movie.id} bgphoto={makeImagePath(movie.backdrop_path, "w500")} variants={boxVar} initial="normal" whileHover="hover" transition={{type: "tween"}} onClick={() => onBoxClicked(movie.id+"")}>
                       <Info variants={infoVar}>
                         <h4>{movie.title}</h4>
                       </Info>
@@ -205,7 +204,7 @@ function Home(){
               <SliderArr key="sl" direction="right" onClick={() => {onClickChangeIndex("right")}}>&rarr;</SliderArr>
             </AnimatePresence>
           </Slider>
-          <MovieDetail />
+          <MovieDetail pageType="home" movieId={movieId}/>
         </>
       )}
     </Wrapper>

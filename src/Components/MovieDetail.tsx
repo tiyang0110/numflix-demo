@@ -1,8 +1,7 @@
 import { AnimatePresence, useScroll } from "framer-motion";
 import styled from "styled-components";
 import { motion } from "framer-motion";
-import { useMatch, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getMovieDetail, IMovieDetail } from "../api";
 import { makeImagePath } from "../utils";
 import { useRecoilState } from "recoil";
@@ -20,7 +19,6 @@ const Overlay = styled(motion.div)`
 const Wrapper = styled(motion.div)`
   position: absolute; 
   width: 40vw; 
-  /* height: 80vh;  */
   left: 0; 
   right: 0; 
   margin: 0 auto;
@@ -83,34 +81,29 @@ const Tag = styled.span`
   }
 `;
 
-// const Product = styled.div`
+interface IMovieDetailProps {
+  movieId: string;
+  pageType: string;
+}
 
-// `;
-
-// const Company = styled.div`
-
-// `;
-
-function MovieDetail(){
-  const navigate = useNavigate();
+function MovieDetail({movieId, pageType}:IMovieDetailProps){
   const {scrollY} = useScroll();
-  const bigMovieMatch = useMatch("/movies/:movieId");
   const [bigMovieOpen, setBigMovieOpen] = useRecoilState(bigMovieOpenState);
   const [movieDetail, setMovieDetail] = useState<IMovieDetail>();
 
-  async function fetchGetMovieDetail(){
-    const data = await getMovieDetail(bigMovieMatch?.params.movieId+"");
+  const fetchGetMovieDetail = useCallback( async (movieId:string) => {
+    const data = await getMovieDetail(movieId);
     setMovieDetail(data);
-  };
+  }, []);
 
   const onOverlayClick = () => {
     setBigMovieOpen(false);
-    navigate("/");
   };
 
   useEffect(() => {
-    if(!bigMovieOpen) return;
-    fetchGetMovieDetail();
+    if(movieId){
+      fetchGetMovieDetail(movieId);
+    }
   }, [bigMovieOpen]);
 
   return (
@@ -118,7 +111,7 @@ function MovieDetail(){
       {bigMovieOpen ? (
         <>
           <Overlay onClick={onOverlayClick} animate={{opacity: 1}} exit={{opacity: 0}} />
-          <Wrapper layoutId={movieDetail?.id+""} style={{top: scrollY.get() + 100}}>
+          <Wrapper layoutId={movieId} style={{top: scrollY.get() + 100}}>
             {movieDetail && (
               <>
                 <Cover style={{backgroundImage: `linear-gradient(to top, black, transparent), url(${makeImagePath(movieDetail.backdrop_path, "w500")})`}} />
@@ -133,15 +126,6 @@ function MovieDetail(){
                     <Tag key={genre.id}>{genre.name}</Tag>
                   ))}
                 </Tags>
-                {/* <Product>
-                  {movieDetail.production_companies.map((com) => (
-                    <Company key={com.id}>
-                      <span>{com.name}</span>
-                      <span>{com.logo_path}</span>
-                      <div style={{ backgroundImage: `url(${makeImagePath(com.logo_path, "w200")})`}} />
-                    </Company>
-                  ))}
-                </Product> */}
               </>
             )}
           </Wrapper>
