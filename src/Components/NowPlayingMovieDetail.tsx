@@ -86,7 +86,7 @@ interface IMovieDetailProps {
   pageType: string;
 }
 
-function MovieDetail({movieId, pageType}:IMovieDetailProps){
+function NowPlayingMovieDetail({movieId, pageType}:IMovieDetailProps){
   const {scrollY} = useScroll();
   const [bigMovieOpen, setBigMovieOpen] = useRecoilState(bigMovieOpenState);
   const [movieDetail, setMovieDetail] = useState<IMovieDetail>();
@@ -135,4 +135,4 @@ function MovieDetail({movieId, pageType}:IMovieDetailProps){
   );
 }
 
-export default MovieDetail;
+export default NowPlayingMovieDetail;

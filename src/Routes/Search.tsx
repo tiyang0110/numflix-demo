@@ -4,7 +4,7 @@ import { IMovieSearchData, searchMovie } from "../api";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { makeImagePath } from "../utils";
-import MovieDetail from "../Components/MovieDetail";
+import MovieDetail from "../Components/NowPlayingMovieDetail";
 import { useSetRecoilState } from "recoil";
 import { bigMovieOpenState } from "../atom";
 
