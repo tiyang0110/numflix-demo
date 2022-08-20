@@ -5,7 +5,17 @@ export const movieIdState = atom({
   default: "",
 })
 
+export const tvIdState = atom({
+  key: "tvId",
+  default: "",
+})
+
 export const bigMovieOpenState = atom({
   key: "bigMovieOpen",
+  default: false
+});
+
+export const bigTvOpenState = atom({
+  key: "bigTvOpen",
   default: false
 });

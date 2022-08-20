@@ -14,6 +14,10 @@ const Loader = styled.div`
   align-items: center;
 `;
 
+const Wrapper = styled.div`
+  position: relative;
+`;
+
 const Banner = styled.div<{bgphoto:string}>`
   height: 100vh;
   background-color: green;
@@ -35,6 +39,14 @@ const Overview = styled.p`
   font-size: 30px;
   width: 50%;
   margin-bottom: 20px;
+`;
+
+const CategoryTitle = styled.div`
+  font-size: 40px;
+  font-weight: 700;
+  top: -210px;
+  position: relative;
+  margin-left: 50px;
 `;
 
 const Slider = styled.div`
@@ -141,7 +153,7 @@ const infoVar = {
 
 const offset = 6;
 
-function HomeNowPlayingSlilder(){
+function HomeNowPlayingSlider(){
   const {data, isLoading} = useQuery<IGetMoviesResult>(['movie', 'nowPlaying'], getMovies);
   const [back, setBack] = useState(false);
   const [index, setIndex] = useState(0);
@@ -183,26 +195,28 @@ function HomeNowPlayingSlilder(){
             <Title>{data?.results[0].title}</Title>
             <Overview>{data?.results[0].overview}</Overview>
           </Banner>
-          <Slider>
-            <AnimatePresence initial={false} onExitComplete={toggleLeaving} custom={back}>
-              <SliderArr key="sa" direction="left" onClick={() => {onClickChangeIndex("left")}}>&larr;</SliderArr>
-                <Row variants={rowVar} custom={back} initial="hidden" animate="visible" exit="exit" transition={{type:"tween", duration:1}} key={index}>
-                  {data?.results.slice(1).slice(offset*index, offset*index+offset).map((movie) => (
-                    <Box layoutId={movie.id+""} key={movie.id} bgphoto={makeImagePath(movie.backdrop_path, "w500")} variants={boxVar} initial="normal" whileHover="hover" transition={{type: "tween"}} onClick={() => onBoxClicked(movie.id+"")}>
-                      <Info variants={infoVar}>
-                        <h4>{movie.title}</h4>
-                      </Info>
-                    </Box>
-                  ))}
-                </Row>
-              <SliderArr key="sl" direction="right" onClick={() => {onClickChangeIndex("right")}}>&rarr;</SliderArr>
-            </AnimatePresence>
-          </Slider>
-          
+          <Wrapper>
+            <CategoryTitle>Now Playing</CategoryTitle>
+            <Slider>
+              <AnimatePresence initial={false} onExitComplete={toggleLeaving} custom={back}>
+                <SliderArr key="sa" direction="left" onClick={() => {onClickChangeIndex("left")}}>&larr;</SliderArr>
+                  <Row variants={rowVar} custom={back} initial="hidden" animate="visible" exit="exit" transition={{type:"tween", duration:1}} key={index}>
+                    {data?.results.slice(1).slice(offset*index, offset*index+offset).map((movie) => (
+                      <Box layoutId={movie.id+""} key={movie.id} bgphoto={makeImagePath(movie.backdrop_path, "w500")} variants={boxVar} initial="normal" whileHover="hover" transition={{type: "tween"}} onClick={() => onBoxClicked(movie.id+"")}>
+                        <Info variants={infoVar}>
+                          <h4>{movie.title}</h4>
+                        </Info>
+                      </Box>
+                    ))}
+                  </Row>
+                <SliderArr key="sl" direction="right" onClick={() => {onClickChangeIndex("right")}}>&rarr;</SliderArr>
+              </AnimatePresence>
+            </Slider>
+          </Wrapper>
         </>
       )}
     </>
   );
 }
 
-export default HomeNowPlayingSlilder;
+export default HomeNowPlayingSlider;

@@ -2,10 +2,10 @@ import { AnimatePresence, useScroll } from "framer-motion";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
-import { getMovieDetail, IMovieDetail } from "../api";
+import { getTvDetail, ITvDetail } from "../api";
 import { makeImagePath } from "../utils";
 import { useRecoilState } from "recoil";
-import { bigMovieOpenState } from "../atom";
+import { bigTvOpenState } from "../atom";
 
 const Overlay = styled(motion.div)`
   position: fixed;
@@ -81,48 +81,48 @@ const Tag = styled.span`
   }
 `;
 
-interface IMovieDetailProps {
-  movieId: string;
+interface ITvDetailProps {
+  tvId: string;
   pageType: string;
 }
 
-function NowPlayingMovieDetail({movieId, pageType}:IMovieDetailProps){
+function TvDetail({tvId, pageType}:ITvDetailProps){
   const {scrollY} = useScroll();
-  const [bigMovieOpen, setBigMovieOpen] = useRecoilState(bigMovieOpenState);
-  const [movieDetail, setMovieDetail] = useState<IMovieDetail>();
+  const [bigTvOpen, setBigTvOpen] = useRecoilState(bigTvOpenState);
+  const [tvDetail, setTvDetail] = useState<ITvDetail>();
 
-  const fetchGetMovieDetail = useCallback( async (movieId:string) => {
-    const data = await getMovieDetail(movieId);
-    setMovieDetail(data);
+  const fetchGetTvDetail = useCallback( async (tvId:string) => {
+    const data = await getTvDetail(tvId);
+    setTvDetail(data);
   }, []);
 
   const onOverlayClick = () => {
-    setBigMovieOpen(false);
+    setBigTvOpen(false);
   };
 
   useEffect(() => {
-    if(movieId){
-      fetchGetMovieDetail(movieId);
+    if(tvId){
+      fetchGetTvDetail(tvId);
     }
-  }, [bigMovieOpen, fetchGetMovieDetail, movieId]);
+  }, [bigTvOpen, fetchGetTvDetail, tvId]);
 
   return (
     <AnimatePresence>
-      {bigMovieOpen ? (
+      {bigTvOpen ? (
         <>
           <Overlay onClick={onOverlayClick} animate={{opacity: 1}} exit={{opacity: 0}} />
-          <Wrapper layoutId={movieId} style={{top: scrollY.get() + 100}}>
-            {movieDetail && (
+          <Wrapper layoutId={tvId} style={{top: scrollY.get() + 100}}>
+            {tvDetail && (
               <>
-                <Cover style={{backgroundImage: `linear-gradient(to top, black, transparent), url(${makeImagePath(movieDetail.backdrop_path, "w500")})`}} />
+                <Cover style={{backgroundImage: `linear-gradient(to top, black, transparent), url(${makeImagePath(tvDetail.backdrop_path, "w500")})`}} />
                 <Title>
-                  {movieDetail?.title}
-                  <h3>({movieDetail?.release_date.substring(0, 4)})</h3>
+                  {tvDetail?.name}
+                  <h3>({tvDetail?.first_air_date.substring(0, 4)})</h3>
                 </Title>
-                <Overview>{movieDetail?.overview}</Overview>
+                <Overview>{tvDetail?.overview}</Overview>
                 <h2>- Genres -</h2>
                 <Tags>
-                  {movieDetail?.genres.map((genre) => (
+                  {tvDetail?.genres.map((genre) => (
                     <Tag key={genre.id}>{genre.name}</Tag>
                   ))}
                 </Tags>
@@ -135,4 +135,4 @@ function NowPlayingMovieDetail({movieId, pageType}:IMovieDetailProps){
   );
 }
 
-export default NowPlayingMovieDetail;
+export default TvDetail;

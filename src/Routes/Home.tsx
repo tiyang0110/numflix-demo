@@ -1,9 +1,9 @@
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { movieIdState } from "../atom";
-import HomeNowPlayingSlilder from "../Components/HomeNowPlayingSlider";
-import HomeTopRatedSlilder from "../Components/HomeTopRatedSlider";
-import NowPlayingMovieDetail from "../Components/NowPlayingMovieDetail";
+import HomeNowPlayingSlider from "../Components/HomeNowPlayingSlider";
+import HomeTopRatedSlider from "../Components/HomeTopRatedSlider";
+import MovieDetail from "../Components/MovieDetail";
 
 const Wrapper = styled.div`
   background-color: black;
@@ -15,9 +15,9 @@ function Home(){
 
   return (
     <Wrapper>
-      <HomeNowPlayingSlilder />
-      <HomeTopRatedSlilder />
-      <NowPlayingMovieDetail pageType="home" movieId={movieId}/>
+      <HomeNowPlayingSlider />
+      <HomeTopRatedSlider />
+      <MovieDetail pageType="home" movieId={movieId}/>
     </Wrapper>
   );
 }

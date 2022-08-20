@@ -9,6 +9,44 @@ interface IMovie {
   overview: string;
 }
 
+interface ITv {
+  id: number;
+  backdrop_path: string;
+  poster_path: string;
+  name: string;
+  overview: string;
+}
+
+export interface IGetTvResult {
+  page: number;
+  results: ITv[];
+  total_pages: number;
+  total_results: number;
+  first_air_date: string;
+}
+
+export interface ITvDetail {
+  id: number;
+  backdrop_path: string;
+  genres: [
+    {
+      id: number;
+      name: string;
+    }
+  ];
+  overview: string;
+  production_companies: [
+    {
+      id: number;
+      logo_path: string;
+      name: string;
+      origin_country: string;
+    }
+  ];
+  first_air_date: string;
+  name: string;
+}
+
 export interface IGetMoviesResult {
   dates: {
     maximum: string;
@@ -19,6 +57,7 @@ export interface IGetMoviesResult {
   total_pages: number;
   total_results: number;
 }
+
 export interface IMovieDetail {
   id: number;
   backdrop_path: string;
@@ -107,9 +146,20 @@ export function searchMovie(keyword:string|null){
 
 
 // TV API
-
 export function getArirangTodayTVs(){
+  return fetch(`${BASE_PATH}/tv/airing_today?api_key=${API_KEY}&language=en-US`).then((response) => response.json());
+}
 
+export function getPopularTVs(){
+  return fetch(`${BASE_PATH}/tv/popular?api_key=${API_KEY}`).then((response) => response.json());
+}
+
+export function getTopRatedTVs(){
+  return fetch(`${BASE_PATH}/tv/top_tated?api_key=${API_KEY}`).then((response) => response.json());
+}
+
+export function getTvDetail(tvId:string){
+  return fetch(`${BASE_PATH}/tv/${tvId}?api_key=${API_KEY}`).then((response) => response.json());
 }
 
 export function serachTV(keyword:string|null){

@@ -19,17 +19,16 @@ const Wrapper = styled.div`
   top: -170px;
 `;
 
-const Title = styled.div`
-  font-size: 68px;
+const CategoryTitle = styled.div`
+  font-size: 40px;
   font-weight: 700;
-  margin-bottom: 20px;
-  margin-left: 23px;
+  margin-left: 50px;
 `;
 
 const Slider = styled.div`
   height: 200px;
   display: flex;
-  margin-top: 30px;
+  margin-top: 10px;
 `;
 
 const SliderArr = styled.div<{direction:string}>`
@@ -130,7 +129,7 @@ const infoVar = {
 
 const offset = 6;
 
-function HomeTopRatedSlilder(){
+function HomeTopRatedSlider(){
   const {data, isLoading} = useQuery<IGetMoviesResult>(['movie', 'topRated'], getTopRatedMovies);
   const [back, setBack] = useState(false);
   const [index, setIndex] = useState(0);
@@ -168,7 +167,7 @@ function HomeTopRatedSlilder(){
       ) : ( 
         <>
           <Wrapper>
-            <Title>TopRated</Title>
+            <CategoryTitle>TopRated</CategoryTitle>
             <Slider>
               <AnimatePresence initial={false} onExitComplete={toggleLeaving} custom={back}>
                 <SliderArr key="sa" direction="left" onClick={() => {onClickChangeIndex("left")}}>&larr;</SliderArr>
@@ -191,4 +190,4 @@ function HomeTopRatedSlilder(){
   );
 }
 
-export default HomeTopRatedSlilder;
+export default HomeTopRatedSlider;

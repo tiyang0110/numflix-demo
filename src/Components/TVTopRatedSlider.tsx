@@ -26,12 +26,6 @@ const Title = styled.div`
   margin-left: 23px;
 `;
 
-const Overview = styled.p`
-  font-size: 30px;
-  width: 50%;
-  margin-bottom: 20px;
-`;
-
 const Slider = styled.div`
   height: 200px;
   display: flex;
@@ -52,6 +46,7 @@ const SliderArr = styled.div<{direction:string}>`
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  top: 60px;
 `;
 
 const Row = styled(motion.div)`
@@ -135,7 +130,7 @@ const infoVar = {
 
 const offset = 6;
 
-function HomeUpcomingSlider(){
+function HomeTopRatedSlilder(){
   const {data, isLoading} = useQuery<IGetMoviesResult>(['movie', 'topRated'], getTopRatedMovies);
   const [back, setBack] = useState(false);
   const [index, setIndex] = useState(0);
@@ -161,7 +156,6 @@ function HomeUpcomingSlider(){
 
   const [leaving, setLeaving] = useState(false);
   const toggleLeaving = () => setLeaving((prev) => !prev);
-
   const onBoxClicked = (movieId:string) => {
     setMovieId(movieId);
     setBigMovieOpen(true);
@@ -197,4 +191,4 @@ function HomeUpcomingSlider(){
   );
 }
 
-export default HomeUpcomingSlider;
+export default HomeTopRatedSlilder;

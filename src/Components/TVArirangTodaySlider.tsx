@@ -1,11 +1,11 @@
 import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { getTopRatedMovies, IGetMoviesResult } from "../api";
+import { getArirangTodayTVs, IGetTvResult } from "../api";
 import { makeImagePath } from "../utils";
 import { useState } from "react";
 import { useSetRecoilState } from "recoil";
-import { bigMovieOpenState, movieIdState } from "../atom";
+import { bigTvOpenState, tvIdState } from "../atom";
 
 const Loader = styled.div`
   height: 20vh;
@@ -19,11 +19,27 @@ const Wrapper = styled.div`
   top: -170px;
 `;
 
-const Title = styled.div`
+const CategoryTitle = styled.div`
+  font-size: 40px;
+  font-weight: 700;
+  margin-left: 50px;
+`;
+
+const Banner = styled.div<{bgphoto:string}>`
+  height: 100vh;
+  background-color: green;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px;
+  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)), url(${(props) => props.bgphoto});
+  background-size: cover;
+`;
+
+const Title = styled.h2`
   font-size: 68px;
   font-weight: 700;
   margin-bottom: 20px;
-  margin-left: 23px;
 `;
 
 const Overview = styled.p`
@@ -35,7 +51,9 @@ const Overview = styled.p`
 const Slider = styled.div`
   height: 200px;
   display: flex;
-  margin-top: 30px;
+  margin-top: 10px;
+  position: relative;
+  align-items: center;
 `;
 
 const SliderArr = styled.div<{direction:string}>`
@@ -49,9 +67,9 @@ const SliderArr = styled.div<{direction:string}>`
   );
   font-size: 40px;
   display: flex;
-  align-items: center;
   justify-content: center;
   cursor: pointer;
+  top: 70px;
 `;
 
 const Row = styled(motion.div)`
@@ -135,13 +153,13 @@ const infoVar = {
 
 const offset = 6;
 
-function HomeUpcomingSlider(){
-  const {data, isLoading} = useQuery<IGetMoviesResult>(['movie', 'topRated'], getTopRatedMovies);
+function TVArirangTodaySlider(){
+  const {data, isLoading} = useQuery<IGetTvResult>(['tv', 'arirangToday'], getArirangTodayTVs);
   const [back, setBack] = useState(false);
   const [index, setIndex] = useState(0);
-  const setMovieId = useSetRecoilState(movieIdState);
-  const setBigMovieOpen = useSetRecoilState(bigMovieOpenState);
-  
+  const setTvId = useSetRecoilState(tvIdState);
+  const setBigTvOpen = useSetRecoilState(bigTvOpenState);
+
   const onClickChangeIndex = (dir:string) => {
     if(data){
       if(leaving) return;
@@ -161,10 +179,9 @@ function HomeUpcomingSlider(){
 
   const [leaving, setLeaving] = useState(false);
   const toggleLeaving = () => setLeaving((prev) => !prev);
-
-  const onBoxClicked = (movieId:string) => {
-    setMovieId(movieId);
-    setBigMovieOpen(true);
+  const onBoxClicked = (tvId:string) => {
+    setTvId(tvId);
+    setBigTvOpen(true);
   };
 
   return (
@@ -173,16 +190,20 @@ function HomeUpcomingSlider(){
         <Loader>Loading</Loader>
       ) : ( 
         <>
+          <Banner bgphoto={makeImagePath(data?.results[1].backdrop_path || "")}>
+            <Title>{data?.results[1].name}</Title>
+            <Overview>{data?.results[1].overview}</Overview>
+          </Banner>
           <Wrapper>
-            <Title>TopRated</Title>
+            <CategoryTitle>Arirang Today</CategoryTitle>
             <Slider>
               <AnimatePresence initial={false} onExitComplete={toggleLeaving} custom={back}>
                 <SliderArr key="sa" direction="left" onClick={() => {onClickChangeIndex("left")}}>&larr;</SliderArr>
                   <Row variants={rowVar} custom={back} initial="hidden" animate="visible" exit="exit" transition={{type:"tween", duration:1}} key={index}>
-                    {data?.results.slice(1).slice(offset*index, offset*index+offset).map((movie) => (
-                      <Box layoutId={movie.id+""} key={movie.id} bgphoto={makeImagePath(movie.backdrop_path, "w500")} variants={boxVar} initial="normal" whileHover="hover" transition={{type: "tween"}} onClick={() => onBoxClicked(movie.id+"")}>
+                    {data?.results.slice(1).slice(offset*index, offset*index+offset).map((tv) => (
+                      <Box layoutId={tv.id+""} key={tv.id} bgphoto={makeImagePath(tv.backdrop_path, "w500")} variants={boxVar} initial="normal" whileHover="hover" transition={{type: "tween"}} onClick={() => onBoxClicked(tv.id+"")}>
                         <Info variants={infoVar}>
-                          <h4>{movie.title}</h4>
+                          <h4>{tv.name}</h4>
                         </Info>
                       </Box>
                     ))}
@@ -197,4 +218,4 @@ function HomeUpcomingSlider(){
   );
 }
 
-export default HomeUpcomingSlider;
+export default TVArirangTodaySlider;
