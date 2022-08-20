@@ -1,0 +1,10 @@
+{
+  "files": {
+    "main.js": "/numflix-demo/static/js/main.4ca1bfca.js",
+    "index.html": "/numflix-demo/index.html",
+    "main.4ca1bfca.js.map": "/numflix-demo/static/js/main.4ca1bfca.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.4ca1bfca.js"
+  ]
+}
