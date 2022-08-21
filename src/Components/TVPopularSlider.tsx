@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { getTopRatedTVs, IGetTvResult } from "../api";
+import { getPopularTVs, IGetTvResult } from "../api";
 import { makeImagePath } from "../utils";
 import { useState } from "react";
 import { useSetRecoilState } from "recoil";
@@ -16,7 +16,8 @@ const Loader = styled.div`
 
 const Wrapper = styled.div`
   position: relative;
-  top: -120px;
+  top: -80px;
+  margin-top: 30px;
 `;
 
 const CategoryTitle = styled.div`
@@ -129,8 +130,8 @@ const infoVar = {
 
 const offset = 6;
 
-function TvTopRatedSlider(){
-  const {data, isLoading} = useQuery<IGetTvResult>(['tv', 'topRated'], getTopRatedTVs);
+function TvPopularSlider(){
+  const {data, isLoading} = useQuery<IGetTvResult>(['tv', 'popular'], getPopularTVs);
   const [back, setBack] = useState(false);
   const [index, setIndex] = useState(0);
   const setTvId = useSetRecoilState(tvIdState);
@@ -167,7 +168,7 @@ function TvTopRatedSlider(){
       ) : ( 
         <>
           <Wrapper>
-            <CategoryTitle>TopRated</CategoryTitle>
+            <CategoryTitle>Popular</CategoryTitle>
             <Slider>
               <AnimatePresence initial={false} onExitComplete={toggleLeaving} custom={back}>
                 <SliderArr key="sa" direction="left" onClick={() => {onClickChangeIndex("left")}}>&larr;</SliderArr>
@@ -190,4 +191,4 @@ function TvTopRatedSlider(){
   );
 }
 
-export default TvTopRatedSlider;
+export default TvPopularSlider;

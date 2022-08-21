@@ -47,6 +47,11 @@ export interface ITvDetail {
   name: string;
 }
 
+export interface ITvLatest {
+  id: number;
+  name: string;
+}
+
 export interface IGetMoviesResult {
   dates: {
     maximum: string;
@@ -155,7 +160,11 @@ export function getPopularTVs(){
 }
 
 export function getTopRatedTVs(){
-  return fetch(`${BASE_PATH}/tv/top_tated?api_key=${API_KEY}`).then((response) => response.json());
+  return fetch(`${BASE_PATH}/tv/top_rated?api_key=${API_KEY}`).then((response) => response.json());
+}
+
+export function getLatestTVs(){
+  return fetch(`${BASE_PATH}/tv/latest?api_key=${API_KEY}`).then((response) => response.json());
 }
 
 export function getTvDetail(tvId:string){

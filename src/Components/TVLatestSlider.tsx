@@ -1,9 +1,9 @@
 import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { getTopRatedTVs, IGetTvResult } from "../api";
+import { getLatestTVs, getPopularTVs, IGetTvResult, ITvLatest } from "../api";
 import { makeImagePath } from "../utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSetRecoilState } from "recoil";
 import { bigTvOpenState, tvIdState } from "../atom";
 
@@ -15,14 +15,16 @@ const Loader = styled.div`
 `;
 
 const Wrapper = styled.div`
-  position: relative;
-  top: -120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 20px;
 `;
 
 const CategoryTitle = styled.div`
   font-size: 40px;
   font-weight: 700;
-  margin-left: 50px;
 `;
 
 const Slider = styled.div`
@@ -49,13 +51,12 @@ const SliderArr = styled.div<{direction:string}>`
 `;
 
 const Row = styled(motion.div)`
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 5px;
-  position: absolute;
   width: 100%;
-  padding: 0px 50px;
   box-sizing: border-box;
+  background-color: teal;
+  color: white;
+  border-radius: 10px;
+  padding: 30px;
 `;
 
 const Box = styled(motion.div)<{bgphoto:string}>`
@@ -129,29 +130,33 @@ const infoVar = {
 
 const offset = 6;
 
-function TvTopRatedSlider(){
-  const {data, isLoading} = useQuery<IGetTvResult>(['tv', 'topRated'], getTopRatedTVs);
+function TvLatestSlider(){
+  const {data, isLoading} = useQuery<ITvLatest>(['tv', 'latest'], getLatestTVs);
   const [back, setBack] = useState(false);
   const [index, setIndex] = useState(0);
   const setTvId = useSetRecoilState(tvIdState);
   const setBigTvOpen = useSetRecoilState(bigTvOpenState);
   
-  const onClickChangeIndex = (dir:string) => {
-    if(data){
-      if(leaving) return;
-      toggleLeaving();
-      const totalMovies = data.results.length - 1;
-      const maxIndex = Math.ceil(totalMovies / offset) - 1;
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
 
-      if(dir === "left"){
-        setBack(true);
-        setIndex((prev) => prev === 0 ? maxIndex : prev - 1);
-      }else{
-        setBack(false);
-        setIndex((prev) => prev === maxIndex ? 0 : prev + 1);
-      }
-    }
-  };
+  // const onClickChangeIndex = (dir:string) => {
+  //   if(data){
+  //     if(leaving) return;
+  //     toggleLeaving();
+  //     const totalMovies = data.results.length - 1;
+  //     const maxIndex = Math.ceil(totalMovies / offset) - 1;
+
+  //     if(dir === "left"){
+  //       setBack(true);
+  //       setIndex((prev) => prev === 0 ? maxIndex : prev - 1);
+  //     }else{
+  //       setBack(false);
+  //       setIndex((prev) => prev === maxIndex ? 0 : prev + 1);
+  //     }
+  //   }
+  // };
 
   const [leaving, setLeaving] = useState(false);
   const toggleLeaving = () => setLeaving((prev) => !prev);
@@ -167,22 +172,12 @@ function TvTopRatedSlider(){
       ) : ( 
         <>
           <Wrapper>
-            <CategoryTitle>TopRated</CategoryTitle>
-            <Slider>
+            <CategoryTitle>Latest Show</CategoryTitle>
               <AnimatePresence initial={false} onExitComplete={toggleLeaving} custom={back}>
-                <SliderArr key="sa" direction="left" onClick={() => {onClickChangeIndex("left")}}>&larr;</SliderArr>
-                  <Row variants={rowVar} custom={back} initial="hidden" animate="visible" exit="exit" transition={{type:"tween", duration:1}} key={index}>
-                    {data?.results.slice(1).slice(offset*index, offset*index+offset).map((tv) => (
-                      <Box layoutId={tv.id+""} key={tv.id} bgphoto={makeImagePath(tv.backdrop_path, "w500")} variants={boxVar} initial="normal" whileHover="hover" transition={{type: "tween"}} onClick={() => onBoxClicked(tv.id+"")}>
-                        <Info variants={infoVar}>
-                          <h4>{tv.name}</h4>
-                        </Info>
-                      </Box>
-                    ))}
-                  </Row>
-                <SliderArr key="sl" direction="right" onClick={() => {onClickChangeIndex("right")}}>&rarr;</SliderArr>
+                <Row variants={rowVar} custom={back} initial="hidden" animate="visible" exit="exit" transition={{type:"tween", duration:1}} key={index}>
+                  <div>{data?.name}</div>
+                </Row>
               </AnimatePresence>
-            </Slider>
           </Wrapper>
         </>
       )}
@@ -190,4 +185,4 @@ function TvTopRatedSlider(){
   );
 }
 
-export default TvTopRatedSlider;
+export default TvLatestSlider;
